@@ -3,9 +3,12 @@ import utils
 import walk
 import match
 import traverse
+from utils import get_pos
 
 
-def resolve(pro, trees, pos):
+def resolve(pro, trees):
+    pos = get_pos(trees[-1], pro)
+    pos = pos[:-1]
     if pro in utils.p:
         tree, pos = hobbs(trees, pos)
         print("Proposed antecedent for '" + pro + "':", tree[pos])

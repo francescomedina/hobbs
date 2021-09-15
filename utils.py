@@ -1,8 +1,23 @@
+from nltk import Tree
+
 # Labels for nominal heads
 nominal_labels = ["NN", "NNS", "NNP", "NNPS", "PRP"]
 
 p = ["He", "he", "Him", "him", "She", "she", "Her", "her", "It", "it", "They", "they"]
 r = ["Himself", "himself", "Herself", "herself", "Itself", "itself", "Themselves", "themselves"]
+
+
+def read_from_file(file_name):
+    if file_name and file_name != "":
+        with open(file_name) as f:
+            sentences = f.readlines()
+        return sentences
+    print("Error trying to read from file")
+    exit(-1)
+
+
+def get_trees(file_name):
+    return [Tree.fromstring(s) for s in read_from_file(file_name)]
 
 
 def get_pos(tree, node):
