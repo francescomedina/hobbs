@@ -7,7 +7,7 @@ from utils import get_trees, read_from_file
 
 def main(argv):
     if len(sys.argv) < 4 or len(sys.argv) > 5:
-        print("Enter the file name or the target string and the pronoun to resolve.")
+        print("Parameter Error: enter the file name or the target string and the pronoun to resolve.")
         exit(-1)
     else:
         if argv[1] in ["--core-nlp", "-c"]:
@@ -17,7 +17,7 @@ def main(argv):
                 sentences = read_from_file(argv[3])
                 trees = [list(parser.raw_parse(s)).pop() for s in sentences]
             elif argv[2] in ["--string", "s"]:
-                trees = [list(parser.raw_parse(argv[3])).pop]
+                trees = [list(parser.raw_parse(argv[3])).pop()]
             else:
                 print("Error in parameters")
                 exit(-1)
