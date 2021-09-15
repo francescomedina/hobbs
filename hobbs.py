@@ -6,47 +6,47 @@ import traverse
 from utils import get_pos
 
 
-def resolve(pro, trees):
-    pos = get_pos(trees[-1], pro)
+def resolve(pronoun, trees):
+    pos = get_pos(trees[-1], pronoun)
     pos = pos[:-1]
-    if pro in utils.p:
-        tree, pos = hobbs(trees, pos)
-        print("Proposed antecedent for '" + pro + "':", tree[pos])
-    elif pro in utils.r:
+    tree = []
+    if pronoun in utils.p:
+        tree, pos = hobbs_algorithm(trees, pos)
+    elif pronoun in utils.r:
         tree, pos = resolve_reflexive(trees, pos)
-        print("Proposed antecedent for '" + pro + "':", tree[pos])
+    print(pronoun + "probably refers to: " + tree[pos])
     for t in trees:
         t.draw()
 
 
-def hobbs(sents, pos):
-    """ The implementation of Hobbs' algorithm.
-
+def hobbs_algorithm(phrase, pos):
+    """
     Args:
-        sents: list of sentences to be searched
+        phrase: list of sentences to be searched
         pos: the position of the pronoun to be resolved
     Returns:
-        proposal: a tuple containing the tree and position of the
+        candidate: a tuple containing the tree and position of the
             proposed antecedent
     """
-    # The index of the most recent sentence in sents
-    sentence_id = len(sents) - 1
 
     # Step 1: begin at the NP node immediately dominating the pronoun
-    tree, pos = utils.get_dom_np(sents, pos)
-
-    # String representation of the pronoun to be resolved
-    pro = tree[pos].leaves()[0].lower()
+    tree, pos = utils.get_dom_np(phrase, pos)
 
     # Step 2: Go up the tree to the first NP or S node encountered
     path, pos = walk.walk_to_np_or_s(tree, pos)
 
+    # String representation of the pronoun to be resolved
+    pronoun = tree[pos].leaves()[0].lower()
+
     # Step 3: Traverse all branches below pos to the left of path
     # left-to-right, breadth-first. Propose as an antecedent any NP
     # node that is encountered which has an NP or S node between it and pos
-    proposal = traverse.traverse_left(tree, pos, path, pro)
+    candidate = traverse.traverse_left(tree, pos, path, pronoun)
 
-    while proposal == (None, None):
+    # The index of the most recent sentence in sents
+    phrase_index = len(phrase) - 1
+
+    while candidate == (None, None):
 
         # Step 4: If pos is the highest S node in the sentence, 
         # traverse the surface parses of previous sentences in order
@@ -55,14 +55,14 @@ def hobbs(sents, pos):
         # encountered, it is proposed as an antecedent
         if pos == ():
             # go to the previous sentence
-            sentence_id -= 1
+            phrase_index -= 1
             # if there are no more sentences, no antecedent found
-            if sentence_id < 0:
+            if phrase_index < 0:
                 return None
             # search new sentence
-            proposal = traverse.traverse_tree(sents[sentence_id], pro)
-            if proposal != (None, None):
-                return proposal
+            candidate = traverse.traverse_tree(phrase[phrase_index], pronoun)
+            if candidate != (None, None):
+                return candidate
 
         # Step 5: If pos is not the highest S in the sentence, from pos,
         # go up the tree to the first NP or S node encountered. 
@@ -74,28 +74,28 @@ def hobbs(sents, pos):
         if "NP" in tree[pos].label() and tree[pos].label() not in utils.nominal_labels:
             for c in tree[pos]:
                 if isinstance(c, nltk.Tree) and c.label() in utils.nominal_labels:
-                    if utils.get_pos(tree, c) not in path and match.match(tree, pos, pro):
-                        proposal = (tree, pos)
-                        if proposal != (None, None):
-                            return proposal
+                    if utils.get_pos(tree, c) not in path and match.match(tree, pos, pronoun):
+                        candidate = (tree, pos)
+                        if candidate != (None, None):
+                            return candidate
 
         # Step 7: Traverse all branches below pos to the left of path, 
         # in a left-to-right, breadth-first manner. Propose any NP node
         # encountered as the antecedent.
-        proposal = traverse.traverse_left(tree, pos, path, pro, check=0)
-        if proposal != (None, None):
-            return proposal
+        candidate = traverse.traverse_left(tree, pos, path, pronoun, check=0)
+        if candidate != (None, None):
+            return candidate
 
         # Step 8: If pos is an S node, traverse all the branches of pos
         # to the right of path in a left-to-right, breadth-forst manner, but
         # do not go below any NP or S node encountered. Propose any NP node
         # encountered as the antecedent.
         if tree[pos].label() == "S":
-            proposal = traverse.traverse_right(tree, pos, path, pro)
-            if proposal != (None, None):
-                return proposal
+            candidate = traverse.traverse_right(tree, pos, path, pronoun)
+            if candidate != (None, None):
+                return candidate
 
-    return proposal
+    return candidate
 
 
 def resolve_reflexive(sents, pos):
@@ -113,6 +113,6 @@ def resolve_reflexive(sents, pos):
     # containing the reflexive and a binding NP
     path, pos = walk.walk_to_s(tree, pos)
 
-    proposal = traverse.traverse_tree(tree, pro)
+    candidate = traverse.traverse_tree(tree, pro)
 
-    return proposal
+    return candidate
