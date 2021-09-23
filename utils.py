@@ -43,6 +43,7 @@ def get_pos(tree, node):
     for pos in tree.treepositions():
         if tree[pos] == node:
             return pos
+    return None
 
 
 def get_pronoun(tree, pos):

@@ -13,7 +13,6 @@ def count_np_nodes(tree):
         return sum(count_np_nodes(c) for c in tree)
 
 
-# Here it is implemented a Breath First Search of the tree and it returns a list of the nodes in left to right level order.
 def bft(tree):
     lst = []
     queue = Queue.Queue()

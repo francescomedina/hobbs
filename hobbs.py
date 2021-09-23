@@ -6,6 +6,9 @@ import traverse
 
 def resolve(pronoun, trees):
     pos = utils.get_pos(trees[-1], pronoun)
+    if pos is None:
+        print('\033[93m' + "The passed pronoun was not found in the discourse. Retry" + '\033[0m')
+        exit(-1)
     pos = pos[:-1]
     tree = []
     if pronoun in utils.pronouns:
@@ -13,21 +16,21 @@ def resolve(pronoun, trees):
     elif pronoun in utils.reflexive_pronouns:
         tree, pos = resolve_reflexive(trees, pos)
     if (tree, pos) != (None, None):
-        print("The pronoun " + "\"" + pronoun + "\"" + " probably refers to: " + str(tree[pos]))
+        print('\033[92m' + "\nThe pronoun " + "\"" + pronoun + "\""
+              + " probably refers to: " + str(tree[pos]) + '\033[0m')
         for t in trees:
             t.draw()
         return
-    return print("No antecedent found")
+    return print('\033[93m' + "No antecedent found" + '\033[0m')
 
 
 def hobbs_algorithm(sentences, pos):
-
     sentence_index = len(sentences) - 1  # Get the most recent sentence index
 
     tree, pos = utils.get_dom_np(sentences, pos)  # A
     pronoun = utils.get_pronoun(tree, pos)
     path, pos = utils.walk_up_to(tree, pos, ["NP", "S", "ROOT"])  # B
-    candidate = traverse.traverse_left(tree, pos, path, pronoun)   # C
+    candidate = traverse.traverse_left(tree, pos, path, pronoun)  # C
 
     while candidate == (None, None):
 
@@ -62,12 +65,7 @@ def hobbs_algorithm(sentences, pos):
 
 
 def resolve_reflexive(sents, pos):
-
     tree, pos = utils.get_dom_np(sents, pos)
     pro = utils.get_pronoun(tree, pos)
-
-    # local binding domain of a reflexive is the lowest clause 
-    # containing the reflexive and a binding NP
     path, pos = utils.walk_up_to(tree, pos, ["S"])
-
     return traverse.traverse_tree(tree, pro)

@@ -15,7 +15,6 @@ def number_match(tree, pos, pro):
     return False
 
 
-#
 def gender_match(tree, pos, pro):
 
     male_names = (name.lower() for name in names.words('male.txt'))
@@ -34,9 +33,6 @@ def gender_match(tree, pos, pro):
                     return False
                 elif pro in neuter_pronouns:
                     return False
-            # If the proposed antecedent is a recognized female name,
-            # but the pronoun being resolved is either male or
-            # neuter, they don't match
             elif c.leaves()[0].lower() in female_names:
                 if pro in male_pronouns:
                     return False
