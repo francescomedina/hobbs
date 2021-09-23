@@ -17,9 +17,11 @@ def resolve(pronoun, trees):
         tree, pos = resolve_reflexive(trees, pos)
     if (tree, pos) != (None, None):
         print('\033[92m' + "\nThe pronoun " + "\"" + pronoun + "\""
-              + " probably refers to: " + str(tree[pos]) + '\033[0m')
-        for t in trees:
-            t.draw()
+              + " probably refers to:\n" + '\033[0m')
+        tree[pos].pretty_print()
+        if input("Do you want to see the sentence trees? [y/n]") in ["Y", "y"]:
+            for t in trees:
+                t.pretty_print()
         return
     return print('\033[93m' + "No antecedent found" + '\033[0m')
 
