@@ -16,12 +16,12 @@ def resolve(pronoun, trees):
     elif pronoun in utils.reflexive_pronouns:
         tree, pos = resolve_reflexive(trees, pos)
     if (tree, pos) != (None, None):
+        print('\033[93m' + "\n\n========  Parsed Sentences  ========\n\n" + '\033[0m')
+        for t in trees:
+            t.pretty_print()
         print('\033[92m' + "\nThe pronoun " + "\"" + pronoun + "\""
               + " probably refers to:\n" + '\033[0m')
         tree[pos].pretty_print()
-        if input("Do you want to see the sentence trees? [y/N]").lower() in ["y", "yes"]:
-            for t in trees:
-                t.pretty_print()
         return
     return print('\033[93m' + "No antecedent found" + '\033[0m')
 
