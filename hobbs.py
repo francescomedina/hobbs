@@ -19,7 +19,7 @@ def resolve(pronoun, trees):
         print('\033[92m' + "\nThe pronoun " + "\"" + pronoun + "\""
               + " probably refers to:\n" + '\033[0m')
         tree[pos].pretty_print()
-        if input("Do you want to see the sentence trees? [y/n]") in ["Y", "y"]:
+        if input("Do you want to see the sentence trees? [y/N]").lower() in ["y", "yes"]:
             for t in trees:
                 t.pretty_print()
         return
