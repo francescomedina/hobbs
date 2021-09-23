@@ -13,15 +13,8 @@ def count_np_nodes(tree):
         return sum(count_np_nodes(c) for c in tree)
 
 
+# Here it is implemented a Breath First Search of the tree and it returns a list of the nodes in left to right level order.
 def bft(tree):
-    """ Perform a breadth-first traversal of a tree.
-    Return the nodes in a list in level-order.
-
-    Args:
-        tree: a tree node
-    Returns:
-        lst: a list of tree nodes in left-to-right level-order
-    """
     lst = []
     queue = Queue.Queue()
     queue.put(tree)
@@ -35,21 +28,6 @@ def bft(tree):
 
 
 def check_for_intervening_np(tree, pos, proposal, pro):
-    """ Check if subtree rooted at pos contains at least
-    three NPs, one of which is:
-        (i)   not the proposal,
-        (ii)  not the pronoun, and
-        (iii) greater than the proposal
-
-    Args:
-        tree: the tree being searched
-        pos: the position of the root subtree being searched
-        proposal: the position of the proposed NP antecedent
-        pro: the pronoun being resolved (string)
-    Returns:
-        True if there is an NP between the proposal and the  pronoun
-        False otherwise
-    """
     bf = bft(tree[pos])
     bf_pos = [utils.get_pos(tree, node) for node in bf]
 
@@ -64,20 +42,6 @@ def check_for_intervening_np(tree, pos, proposal, pro):
 
 
 def traverse_left(tree, pos, path, pro, check=1):
-    """
-    If check is set to 1, propose as an antecedent any NP node
-        that is encountered which has an NP or S node between it and pos.
-    If check is set to 0, propose any NP node encountered as the antecedent.
-    Args:
-        tree: the tree being searched
-        pos: the position of the root of the subtree being searched
-        path: the path took to get to pos
-        pro: the pronoun being resolved (string)
-        check: whether or not there must be an intervening NP
-    Returns:
-        tree: the tree containing the antecedent
-        p: the position of the proposed antecedent
-    """
     # get the results of breadth first search of the subtree
     # iterate over them
     breadth_first = bft(tree[pos])
@@ -103,16 +67,6 @@ def traverse_left(tree, pos, path, pro, check=1):
 
 
 def traverse_right(tree, pos, path, pro):
-    """
-    Args:
-        tree: the tree being searched
-        pos: the position of the root of the subtree being searched
-        path: the path taken to get to pos
-        pro: the pronoun being resolved (string)
-    Returns:
-        tree: the tree containing the antecedent
-        p: the position of the antecedent
-    """
     breadth_first = bft(tree[pos])
     bf_pos = [utils.get_pos(tree, node) for node in breadth_first]
 
@@ -126,11 +80,6 @@ def traverse_right(tree, pos, path, pro):
 
 
 def traverse_tree(tree, pro):
-    """
-    Args:
-        tree: the tree being searched
-        pro: the pronoun being resolved (string)
-    """
     # Initialize a queue and enqueue the root of the tree
     queue = Queue.Queue()
     queue.put(tree)

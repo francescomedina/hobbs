@@ -8,26 +8,26 @@ def resolve(pronoun, trees):
     pos = utils.get_pos(trees[-1], pronoun)
     pos = pos[:-1]
     tree = []
-    for t in trees:
-        t.draw()
-    if pronoun in utils.p:
+    if pronoun in utils.pronouns:
         tree, pos = hobbs_algorithm(trees, pos)
-    elif pronoun in utils.r:
+    elif pronoun in utils.reflexive_pronouns:
         tree, pos = resolve_reflexive(trees, pos)
     if (tree, pos) != (None, None):
-        return print("The pronoun " + "\"" + pronoun + "\"" + " probably refers to: " + str(tree[pos]))
+        print("The pronoun " + "\"" + pronoun + "\"" + " probably refers to: " + str(tree[pos]))
+        for t in trees:
+            t.draw()
+        return
     return print("No antecedent found")
 
 
 def hobbs_algorithm(sentences, pos):
 
-    tree, pos = utils.get_dom_np(sentences, pos)  # A
-    pronoun = tree[pos].leaves()[0].lower()
-    path, pos = utils.walk_up_to(tree, pos, ["NP", "S", "ROOT"])  # B
-
-    candidate = traverse.traverse_left(tree, pos, path, pronoun)   # C
-
     sentence_index = len(sentences) - 1  # Get the most recent sentence index
+
+    tree, pos = utils.get_dom_np(sentences, pos)  # A
+    pronoun = utils.get_pronoun(tree, pos)
+    path, pos = utils.walk_up_to(tree, pos, ["NP", "S", "ROOT"])  # B
+    candidate = traverse.traverse_left(tree, pos, path, pronoun)   # C
 
     while candidate == (None, None):
 
@@ -62,20 +62,12 @@ def hobbs_algorithm(sentences, pos):
 
 
 def resolve_reflexive(sents, pos):
-    """ Resolves reflexive pronouns by going to the first S
-    node above the NP dominating the pronoun and searching for
-    a matching antecedent. If none is found in the lowest S
-    containing the anaphor, then the sentence probably isn't 
-    grammatical or the reflexive is being used as an intensifier.
-    """
-    tree, pos = utils.get_dom_np(sents, pos)
 
-    pro = tree[pos].leaves()[0].lower()
+    tree, pos = utils.get_dom_np(sents, pos)
+    pro = utils.get_pronoun(tree, pos)
 
     # local binding domain of a reflexive is the lowest clause 
     # containing the reflexive and a binding NP
     path, pos = utils.walk_up_to(tree, pos, ["S"])
 
-    candidate = traverse.traverse_tree(tree, pro)
-
-    return candidate
+    return traverse.traverse_tree(tree, pro)

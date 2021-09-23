@@ -1,10 +1,29 @@
 from nltk import Tree
 
-# Labels for nominal heads
 nominal_labels = ["NN", "NNS", "NNP", "NNPS", "PRP"]
-
-p = ["He", "he", "Him", "him", "She", "she", "Her", "her", "It", "it", "They", "they"]
-r = ["Himself", "himself", "Herself", "herself", "Itself", "itself", "Themselves", "themselves"]
+pronouns = ["He", "he", "Him", "him", "She", "she", "Her", "her", "It", "it", "They", "they"]
+reflexive_pronouns = ["Himself", "himself", "Herself", "herself", "Itself", "itself", "Themselves", "themselves"]
+pronoun_numbers = {
+    "NN": "singular",
+    "NNP": "singular",
+    "he": "singular",
+    "she": "singular",
+    "him": "singular",
+    "her": "singular",
+    "it": "singular",
+    "himself": "singular",
+    "herself": "singular",
+    "itself": "singular",
+    "NNS": "plural",
+    "NNPS": "plural",
+    "they": "plural",
+    "them": "plural",
+    "themselves": "plural",
+    "PRP": None
+}
+male_p = ["he", "him", "himself"]
+female_p = ["she", "her", "herself"]
+neuter_p = ["it", "itself"]
 
 
 def read_from_file(file_name):
@@ -21,26 +40,16 @@ def get_trees(file_name):
 
 
 def get_pos(tree, node):
-    """ Given a tree and a node, return the tree position
-    of the node.
-    """
     for pos in tree.treepositions():
         if tree[pos] == node:
             return pos
 
 
-def get_dom_np(sents, pos):
-    """ Finds the position of the NP that immediately dominates
-    the pronoun.
+def get_pronoun(tree, pos):
+    return tree[pos].leaves()[0].lower()
 
-    Args:
-        sents: list of trees (or tree) to search
-        pos: the tree position of the pronoun to be resolved
-    Returns:
-        tree: the tree containing the pronoun
-        dom_pos: the position of the NP immediately dominating
-            the pronoun
-    """
+
+def get_dom_np(sents, pos):
     # start with the last tree in sents
     tree = sents[-1]
     # get the NP's position by removing the last element from
