@@ -47,3 +47,17 @@ def get_dom_np(sents, pos):
     # the pronoun's
     dom_pos = pos[:-1]
     return tree, dom_pos
+
+
+def walk_up_to(tree, pos, targets):
+    path = [pos]
+    still_looking = True
+    while still_looking:
+        # climb one level up the tree by removing the last element
+        # from the current tree position
+        pos = pos[:-1]
+        path.append(pos)
+        # if an S node is encountered, return the path and pos
+        if tree[pos].label() in targets:
+            still_looking = False
+    return path, pos

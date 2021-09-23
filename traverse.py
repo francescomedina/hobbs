@@ -2,13 +2,9 @@ import nltk
 import queue as Queue
 import utils
 import match
-import traverse
 
 
 def count_np_nodes(tree):
-    """ Function from class to count NP nodes.
-    """
-    np_count = 0
     if not isinstance(tree, nltk.Tree):
         return 0
     elif "NP" in tree.label() and tree.label() not in utils.nominal_labels:
@@ -68,19 +64,14 @@ def check_for_intervening_np(tree, pos, proposal, pro):
 
 
 def traverse_left(tree, pos, path, pro, check=1):
-    """ Traverse all branches below pos to the left of path in a
-    left-to-right, breadth-first fashion. Returns the first potential
-    antecedent found.
-
+    """
     If check is set to 1, propose as an antecedent any NP node
-    that is encountered which has an NP or S node between it and pos.
-
+        that is encountered which has an NP or S node between it and pos.
     If check is set to 0, propose any NP node encountered as the antecedent.
-
     Args:
         tree: the tree being searched
         pos: the position of the root of the subtree being searched
-        path: the path taked to get to pos
+        path: the path took to get to pos
         pro: the pronoun being resolved (string)
         check: whether or not there must be an intervening NP
     Returns:
@@ -99,7 +90,7 @@ def traverse_left(tree, pos, path, pro, check=1):
         for p in bf_pos:
             if p < path[0] and p not in path:
                 if "NP" in tree[p].label() and match.match(tree, p, pro):
-                    if traverse.check_for_intervening_np(tree, pos, p, pro):
+                    if check_for_intervening_np(tree, pos, p, pro):
                         return tree, p
 
     elif check == 0:
@@ -112,11 +103,7 @@ def traverse_left(tree, pos, path, pro, check=1):
 
 
 def traverse_right(tree, pos, path, pro):
-    """ Traverse all the branches of pos to the right of path p in a
-    left-to-right, breadth-first manner, but do not go below any NP
-    or S node encountered. Propose any NP node encountered as the
-    antecedent. Returns the first potential antecedent.
-
+    """
     Args:
         tree: the tree being searched
         pos: the position of the root of the subtree being searched
@@ -139,10 +126,7 @@ def traverse_right(tree, pos, path, pro):
 
 
 def traverse_tree(tree, pro):
-    """ Traverse a tree in a left-to-right, breadth-first manner,
-    proposing any NP encountered as an antecedent. Returns the
-    tree and the position of the first possible antecedent.
-
+    """
     Args:
         tree: the tree being searched
         pro: the pronoun being resolved (string)

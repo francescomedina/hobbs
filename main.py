@@ -16,7 +16,7 @@ if __name__ == "__main__":
             if sys.argv[2] in ["--file", "-f"]:
                 sentences = read_from_file(sys.argv[3])
                 trees = [list(parser.raw_parse(s)).pop() for s in sentences]
-            elif sys.argv[2] in ["--string", "s"]:
+            elif sys.argv[2] in ["--string", "-s"]:
                 trees = [list(parser.raw_parse(sys.argv[3])).pop()]
             else:
                 print("Error in parameters")
